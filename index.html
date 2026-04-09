@@ -937,26 +937,26 @@ function renderStats() {
   }).join('');
 }
 
-// Swipe support
-let touchStartX = 0;
-let touchHandled = false;
+// Swipe and tap support
 function setupSwipe() {
   const container = document.getElementById('cardContainer');
+  let startX = 0;
+  let swiped = false;
   container.addEventListener('touchstart', e => {
-    touchStartX = e.changedTouches[0].screenX;
+    startX = e.changedTouches[0].screenX;
+    swiped = false;
   }, { passive: true });
   container.addEventListener('touchend', e => {
-    touchHandled = true;
-    const diff = touchStartX - e.changedTouches[0].screenX;
+    const diff = startX - e.changedTouches[0].screenX;
     if (Math.abs(diff) > 50) {
+      swiped = true;
       if (diff > 0) nextCard();
       else prevCard();
-    } else {
-      flipCard();
     }
-  });
+    // Taps (no swipe) are handled by the click event below
+  }, { passive: true });
   container.addEventListener('click', e => {
-    if (touchHandled) { touchHandled = false; return; }
+    if (swiped) { swiped = false; return; }
     if (e.target.closest('.mastery-btn')) return;
     flipCard();
   });
