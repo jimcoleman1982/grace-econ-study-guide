@@ -177,6 +177,7 @@ body {
 .badge-8 { background: #fef3c7; color: #92400e; }
 /* Card flip */
 .card-container {
+  -webkit-perspective: 1200px;
   perspective: 1200px;
   width: 100%;
   margin-bottom: 14px;
@@ -186,10 +187,12 @@ body {
   position: relative;
   width: 100%;
   min-height: 380px;
+  -webkit-transition: -webkit-transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-.card-inner.flipped { transform: rotateY(180deg); }
+.card-inner.flipped { -webkit-transform: rotateY(180deg); transform: rotateY(180deg); }
 .card-face {
   position: absolute;
   inset: 0;
@@ -222,6 +225,7 @@ body {
   color: var(--text-muted);
 }
 .card-back {
+  -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
 .card-back .card-module-badge { margin-bottom: 10px; align-self: flex-start; }
@@ -935,12 +939,14 @@ function renderStats() {
 
 // Swipe support
 let touchStartX = 0;
+let touchHandled = false;
 function setupSwipe() {
   const container = document.getElementById('cardContainer');
   container.addEventListener('touchstart', e => {
     touchStartX = e.changedTouches[0].screenX;
   }, { passive: true });
   container.addEventListener('touchend', e => {
+    touchHandled = true;
     const diff = touchStartX - e.changedTouches[0].screenX;
     if (Math.abs(diff) > 50) {
       if (diff > 0) nextCard();
@@ -950,6 +956,7 @@ function setupSwipe() {
     }
   });
   container.addEventListener('click', e => {
+    if (touchHandled) { touchHandled = false; return; }
     if (e.target.closest('.mastery-btn')) return;
     flipCard();
   });
