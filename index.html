@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grace's Econ Study Guide</title>
+<style>
+:root {
+  --primary: #1a7a6d;
+  --primary-light: #e0f5f1;
+  --primary-dark: #15635a;
+  --success: #27ae60;
+  --success-light: #d5f5e3;
+  --danger: #e74c3c;
+  --danger-light: #fadbd8;
+  --warning: #f39c12;
+  --bg: #f4f6f8;
+  --card-bg: #ffffff;
+  --text: #2c3e50;
+  --text-light: #7f8c8d;
+  --text-muted: #95a5a6;
+  --border: #e0e4e8;
+  --shadow: 0 4px 24px rgba(0,0,0,0.07);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+/* Header */
+.header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 28px 20px 20px;
+  text-align: center;
+}
+.header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+.header p { font-size: 0.9rem; opacity: 0.85; }
+/* Nav */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  padding: 10px 12px;
+}
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  background: white;
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: var(--shadow-sm);
+  max-width: 720px;
+  margin: 0 auto;
+}
+.nav-tab {
+  flex: 1;
+  padding: 10px 6px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+.nav-tab.active { background: var(--primary); color: white; }
+.nav-tab:hover:not(.active) { background: var(--primary-light); color: var(--primary); }
+/* Main content */
+.main { max-width: 720px; margin: 0 auto; padding: 16px 12px; }
+.section { display: none; }
+.section.active { display: block; }
+/* Flashcard section */
+.stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  font-size: 0.85rem;
+}
+.stats-mastered { color: var(--success); font-weight: 700; }
+.stats-practice { color: var(--danger); font-weight: 700; }
+.module-progress {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.module-prog-item {
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  box-shadow: var(--shadow-sm);
+  font-size: 0.75rem;
+  text-align: center;
+}
+.module-prog-item .label { color: var(--text-light); margin-bottom: 4px; }
+.prog-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.prog-bar-fill {
+  height: 100%;
+  background: var(--success);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+  align-items: center;
+}
+.pill {
+  padding: 7px 14px;
+  border: 2px solid var(--border);
+  background: white;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-light);
+}
+.pill.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.pill.practice-filter.active { border-color: var(--danger); background: var(--danger-light); color: var(--danger); }
+.btn-shuffle {
+  margin-left: auto;
+  padding: 7px 14px;
+  border: none;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-shuffle:hover { background: var(--primary); color: white; }
+.card-progress {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.card-module-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-5 { background: #dbeafe; color: #1e40af; }
+.badge-6 { background: #fce7f3; color: #9d174d; }
+.badge-7 { background: #d1fae5; color: #065f46; }
+.badge-8 { background: #fef3c7; color: #92400e; }
+/* Card flip */
+.card-container {
+  perspective: 1200px;
+  width: 100%;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+.card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 380px;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.card-inner.flipped { transform: rotateY(180deg); }
+.card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.card-front {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.card-front .card-module-badge { margin-bottom: 16px; }
+.card-front .question {
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text);
+}
+.card-front .tap-hint {
+  margin-top: auto;
+  padding-top: 16px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.card-back {
+  transform: rotateY(180deg);
+}
+.card-back .card-module-badge { margin-bottom: 10px; align-self: flex-start; }
+.card-back .answer {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text);
+  flex: 1;
+}
+.card-back .mastery-btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.mastery-btn {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+.mastery-btn.got-it { border-color: var(--success); color: var(--success); }
+.mastery-btn.got-it:hover, .mastery-btn.got-it.selected { background: var(--success); color: white; }
+.mastery-btn.need-practice { border-color: var(--danger); color: var(--danger); }
+.mastery-btn.need-practice:hover, .mastery-btn.need-practice.selected { background: var(--danger); color: white; }
+/* Card navigation */
+.card-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+.card-nav-btn {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--border);
+  background: white;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--text);
+}
+.card-nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+.card-nav-btn:disabled { opacity: 0.3; cursor: default; }
+/* Interactive sections common */
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.section-desc {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.graph-card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 16px;
+  margin-bottom: 16px;
+}
+.graph-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+.graph-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.graph-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--border);
+  background: white;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-light);
+}
+.graph-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.graph-btn:hover:not(.active) { border-color: var(--text-muted); }
+.graph-btn.scenario { font-size: 0.75rem; padding: 6px 12px; }
+.graph-btn.scenario.active { border-color: var(--primary); background: var(--primary); color: white; }
+svg { width: 100%; height: auto; display: block; }
+.walkthrough-box {
+  background: var(--primary-light);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-top: 14px;
+  min-height: 80px;
+}
+.walkthrough-box p { font-size: 0.9rem; line-height: 1.6; }
+.walkthrough-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+.walkthrough-nav button {
+  padding: 6px 16px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.walkthrough-nav button:disabled { opacity: 0.4; cursor: default; }
+.walkthrough-nav .step-indicator { font-size: 0.8rem; color: var(--text-light); font-weight: 600; }
+/* AS/AD indicators */
+.indicators {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+.indicator {
+  text-align: center;
+  padding: 12px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+.indicator .ind-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); }
+.indicator .ind-value { font-size: 1rem; font-weight: 800; margin-top: 4px; }
+.indicator.good .ind-value { color: var(--success); }
+.indicator.bad .ind-value { color: var(--danger); }
+.indicator.neutral .ind-value { color: var(--text-light); }
+.explanation-box {
+  background: #fefce8;
+  border-left: 4px solid var(--warning);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 14px 16px;
+  margin-top: 14px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+.explanation-box strong { color: var(--text); }
+/* Rule of 72 */
+.calc-display {
+  text-align: center;
+  padding: 24px 16px;
+  background: var(--primary-light);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+}
+.calc-display .big-num { font-size: 2.5rem; font-weight: 800; color: var(--primary); }
+.calc-display .calc-label { font-size: 0.9rem; color: var(--text-light); margin-top: 4px; }
+.slider-group { margin-bottom: 16px; }
+.slider-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+.slider-row { display: flex; align-items: center; gap: 12px; }
+.slider-row input[type=range] { flex: 1; accent-color: var(--primary); height: 6px; }
+.slider-row .rate-val { font-size: 1.1rem; font-weight: 800; color: var(--primary); min-width: 50px; text-align: right; }
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.compare-col {
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+.compare-col h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; }
+.compare-col .doubles-in { font-size: 1.5rem; font-weight: 800; margin: 8px 0 4px; }
+.compare-col .doubles-label { font-size: 0.78rem; color: var(--text-light); }
+.color-a { color: var(--primary); }
+.color-b { color: #8b5cf6; }
+.chart-container { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
+.chart-container h3 { font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+.chart-legend { display: flex; gap: 20px; justify-content: center; margin-top: 10px; font-size: 0.8rem; }
+.chart-legend span { display: flex; align-items: center; gap: 6px; }
+.chart-legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+/* Responsive */
+@media (min-width: 768px) {
+  .header { padding: 36px 20px 28px; }
+  .header h1 { font-size: 1.8rem; }
+  .main { padding: 20px; }
+  .card-inner { min-height: 420px; }
+  .card-front .question { font-size: 1.35rem; }
+  .card-face { padding: 32px 28px; }
+  .nav-tab { font-size: 0.85rem; padding: 12px 16px; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>Grace's Econ Study Guide</h1>
+  <p>Exam 2 Review: Modules 5 - 8</p>
+</header>
+
+<nav class="nav">
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-section="flashcards">Flashcards</button>
+    <button class="nav-tab" data-section="tariff">Tariff Graph</button>
+    <button class="nav-tab" data-section="asad">AS/AD Model</button>
+    <button class="nav-tab" data-section="rule72">Rule of 72</button>
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- FLASHCARDS SECTION -->
+<div id="flashcards" class="section active">
+  <div class="stats-bar">
+    <span>Mastered: <span class="stats-mastered" id="statsMastered">0</span> / <span id="statsTotal">26</span></span>
+    <span>Need Practice: <span class="stats-practice" id="statsPractice">0</span></span>
+  </div>
+  <div class="module-progress" id="moduleProgress"></div>
+  <div class="controls" id="filterControls"></div>
+  <div class="card-progress" id="cardProgress">Card 1 of 26</div>
+  <div class="card-container" id="cardContainer">
+    <div class="card-inner" id="cardInner">
+      <div class="card-face card-front" id="cardFront">
+        <span class="card-module-badge" id="frontBadge"></span>
+        <div class="question" id="frontQuestion"></div>
+        <div class="tap-hint">Tap to flip</div>
+      </div>
+      <div class="card-face card-back" id="cardBack">
+        <span class="card-module-badge" id="backBadge"></span>
+        <div class="answer" id="backAnswer"></div>
+        <div class="mastery-btns">
+          <button class="mastery-btn got-it" id="btnGotIt" onclick="event.stopPropagation(); markCard('gotit')">Got It</button>
+          <button class="mastery-btn need-practice" id="btnPractice" onclick="event.stopPropagation(); markCard('practice')">Need Practice</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-nav">
+    <button class="card-nav-btn" id="btnPrev" onclick="prevCard()">&#8592;</button>
+    <span class="card-progress" id="cardProgressBottom"></span>
+    <button class="card-nav-btn" id="btnNext" onclick="nextCard()">&#8594;</button>
+  </div>
+</div>
+
+<!-- TARIFF GRAPH SECTION -->
+<div id="tariff" class="section">
+  <h2 class="section-title">Interactive Tariff Graph</h2>
+  <p class="section-desc">See how tariffs change consumer surplus, producer surplus, and create deadweight loss. Toggle between views and walk through each step.</p>
+  <div class="graph-card">
+    <div class="graph-controls">
+      <button class="graph-btn active" onclick="setTariffView('free')" id="btnFreeTrade">Free Trade</button>
+      <button class="graph-btn" onclick="setTariffView('tariff')" id="btnTariff">With Tariff</button>
+    </div>
+    <svg id="tariffSvg" viewBox="0 0 520 400"></svg>
+    <div class="walkthrough-box" id="tariffWalkthrough">
+      <p id="tariffWalkthroughText"></p>
+      <div class="walkthrough-nav">
+        <button onclick="tariffStepPrev()" id="tariffPrevBtn">Previous</button>
+        <span class="step-indicator" id="tariffStepIndicator">Step 1 of 6</span>
+        <button onclick="tariffStepNext()" id="tariffNextBtn">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AS/AD MODEL SECTION -->
+<div id="asad" class="section">
+  <h2 class="section-title">Aggregate Supply & Aggregate Demand</h2>
+  <p class="section-desc">Shift the AD and AS curves to see how the economy responds. Watch GDP, unemployment, and inflation change in real time.</p>
+  <div class="graph-card">
+    <h3>Choose a Scenario</h3>
+    <div class="graph-controls">
+      <button class="graph-btn scenario active" onclick="setScenario('equilibrium')" id="scnEquilibrium">Equilibrium</button>
+      <button class="graph-btn scenario" onclick="setScenario('recessionary')" id="scnRecessionary">Recessionary Gap</button>
+      <button class="graph-btn scenario" onclick="setScenario('inflationary')" id="scnInflationary">Inflationary Gap</button>
+      <button class="graph-btn scenario" onclick="setScenario('stagflation')" id="scnStagflation">Stagflation</button>
+    </div>
+    <svg id="asadSvg" viewBox="0 0 520 400"></svg>
+    <div class="indicators" id="asadIndicators"></div>
+    <div class="explanation-box" id="asadExplanation"></div>
+  </div>
+  <div class="graph-card">
+    <h3>Manual Controls</h3>
+    <p style="font-size:0.82rem;color:var(--text-light);margin-bottom:12px;">Shift curves yourself and observe the effects.</p>
+    <div class="graph-controls">
+      <button class="graph-btn" onclick="shiftCurve('ad', -1)">AD Left</button>
+      <button class="graph-btn" onclick="shiftCurve('ad', 1)">AD Right</button>
+      <button class="graph-btn" onclick="shiftCurve('as', -1)">AS Left</button>
+      <button class="graph-btn" onclick="shiftCurve('as', 1)">AS Right</button>
+      <button class="graph-btn" onclick="setScenario('equilibrium')" style="margin-left:auto;">Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- RULE OF 72 SECTION -->
+<div id="rule72" class="section">
+  <h2 class="section-title">The Rule of 72</h2>
+  <p class="section-desc">Divide 72 by the growth rate to estimate how many years it takes to double. Drag the sliders to see the dramatic effect of small differences in growth rates.</p>
+  <div class="graph-card">
+    <h3>Quick Calculator</h3>
+    <div class="slider-group">
+      <label>Growth Rate</label>
+      <div class="slider-row">
+        <input type="range" id="mainSlider" min="1" max="12" step="0.5" value="3">
+        <span class="rate-val" id="mainRateVal">3%</span>
+      </div>
+    </div>
+    <div class="calc-display">
+      <div class="big-num" id="mainResult">24</div>
+      <div class="calc-label">years to double</div>
+    </div>
+    <p style="font-size:0.85rem;color:var(--text-light);text-align:center;">72 &divide; <span id="mainFormula">3</span> = <span id="mainFormulaResult">24</span> years</p>
+  </div>
+  <div class="graph-card">
+    <h3>Compare Two Growth Rates</h3>
+    <p style="font-size:0.82rem;color:var(--text-light);margin-bottom:14px;">See why even small differences in growth rates matter enormously over time.</p>
+    <div class="comparison">
+      <div class="compare-col">
+        <h4 class="color-a">Country A</h4>
+        <div class="slider-row">
+          <input type="range" id="sliderA" min="1" max="12" step="0.5" value="2">
+          <span class="rate-val color-a" id="rateValA">2%</span>
+        </div>
+        <div class="doubles-in color-a" id="doublesA">36</div>
+        <div class="doubles-label">years to double</div>
+      </div>
+      <div class="compare-col">
+        <h4 class="color-b">Country B</h4>
+        <div class="slider-row">
+          <input type="range" id="sliderB" min="1" max="12" step="0.5" value="6">
+          <span class="rate-val color-b" id="rateValB">6%</span>
+        </div>
+        <div class="doubles-in color-b" id="doublesB">12</div>
+        <div class="doubles-label">years to double</div>
+      </div>
+    </div>
+  </div>
+  <div class="chart-container">
+    <h3>GDP Growth Over 72 Years</h3>
+    <p style="font-size:0.82rem;color:var(--text-light);margin-bottom:12px;">Starting GDP index = 100. Watch how compounding creates massive gaps.</p>
+    <svg id="growthChart" viewBox="0 0 560 320"></svg>
+    <div class="chart-legend">
+      <span><span class="dot" style="background:var(--primary)"></span> Country A (<span id="legendA">2%</span>)</span>
+      <span><span class="dot" style="background:#8b5cf6"></span> Country B (<span id="legendB">6%</span>)</span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* =========================================
+   DATA: All 26 Q&A pairs
+   ========================================= */
+const CARDS = [
+  {
+    id: 1, module: 5, moduleTitle: "International Trade",
+    question: "Why do nations import or export certain goods?",
+    answer: "Nations trade because of comparative advantage. A country exports goods it can produce at a lower opportunity cost than other countries, and imports goods that other countries can produce more cheaply. By specializing in what they're relatively best at and trading for the rest, both countries end up with more total goods than if each tried to produce everything on its own."
+  },
+  {
+    id: 2, module: 5, moduleTitle: "International Trade",
+    question: "How can you show an exporting country or an importing country using supply and demand?",
+    answer: "On a standard supply and demand graph, draw the domestic supply and demand curves, then add a horizontal line at the world price. If the world price is above the domestic equilibrium price, domestic producers want to sell more than domestic consumers want to buy at that price, so the country exports the surplus. If the world price is below the domestic equilibrium, consumers want more than domestic producers will supply at that price, so the country imports the difference. The gap between domestic quantity supplied and domestic quantity demanded at the world price is the amount exported or imported."
+  },
+  {
+    id: 3, module: 5, moduleTitle: "International Trade",
+    question: "What are the net gains from trade, and how can we show these graphically?",
+    answer: "Free trade increases total surplus (consumer surplus + producer surplus) compared to the no-trade equilibrium. In an importing country, consumer surplus grows by more than producer surplus shrinks, creating a net gain. In an exporting country, producer surplus grows by more than consumer surplus shrinks, also creating a net gain. Graphically, the net gain from trade is the triangle between the domestic supply curve, the domestic demand curve, and the world price line."
+  },
+  {
+    id: 4, module: 5, moduleTitle: "International Trade",
+    question: "Who are the winners and losers with free trade?",
+    answer: "In an importing country, consumers win because they get lower prices and more goods, while domestic producers lose because they sell less at a lower price. In an exporting country, producers win because they sell more at a higher price, while consumers lose because they pay more. The key point is that in both cases, the winners gain more than the losers lose, so trade creates a net benefit for the country as a whole."
+  },
+  {
+    id: 5, module: 5, moduleTitle: "International Trade",
+    question: "How do countries restrict trade?",
+    answer: "Countries restrict trade primarily through tariffs (taxes on imported goods that raise their price), quotas (legal limits on the quantity of a good that can be imported), and non-tariff barriers such as strict regulations, licensing requirements, government subsidies to domestic industries, and voluntary export restraints. All of these tools protect domestic producers from foreign competition by making imports more expensive or harder to bring in."
+  },
+  {
+    id: 6, module: 5, moduleTitle: "International Trade",
+    question: "Given a tariff graph, explain all areas. How do the areas change after the tariff is implemented?",
+    answer: "Start with a free-trade import graph showing consumer surplus (large triangle above world price, below demand) and producer surplus (small triangle below world price, above supply). When a tariff is added, the price rises to the world price + tariff. Consumer surplus shrinks. Producer surplus grows. The government collects tariff revenue (tariff times quantity imported). Two deadweight loss triangles appear: one on the production side (domestic firms producing inefficiently) and one on the consumption side (lost consumer purchases). The total loss to consumers exceeds the combined gain to producers and government -- that leftover loss is the deadweight loss."
+  },
+  {
+    id: 7, module: 5, moduleTitle: "International Trade",
+    question: "Who wins/loses when a tariff is implemented? Are tariffs efficient?",
+    answer: "Domestic producers win because they sell more at a higher price. The government wins by collecting tariff revenue. Domestic consumers lose because they pay higher prices and buy fewer goods. Tariffs are not efficient because the loss to consumers is greater than the combined gains to producers and the government. The difference is deadweight loss, which represents economic value that is destroyed and captured by nobody."
+  },
+  {
+    id: 8, module: 5, moduleTitle: "International Trade",
+    question: "What are the arguments to restrict trade? What are some counter-arguments?",
+    answer: "Arguments for restricting trade: protecting infant industries, national security, saving domestic jobs, preventing dumping (selling below cost), and leveling the playing field against lower standards abroad. Counter-arguments from economists: trade restrictions raise prices for consumers, invite retaliation from partners, protect inefficient industries, and job losses in one sector are typically offset by gains in export industries. Most economists agree the overall gains from free trade outweigh the losses."
+  },
+  {
+    id: 9, module: 6, moduleTitle: "International Finance",
+    question: "What is a trade surplus or trade deficit?",
+    answer: "A trade surplus occurs when a country's exports exceed its imports, meaning more money flows in from selling goods abroad than flows out from buying foreign goods. A trade deficit is the opposite: imports exceed exports, so the country is buying more from the world than it sells. The United States has run a trade deficit for decades, meaning Americans buy more foreign goods than foreigners buy American goods."
+  },
+  {
+    id: 10, module: 6, moduleTitle: "International Finance",
+    question: "What are the accounts in the balance of payment system?",
+    answer: "The balance of payments has two main accounts. The current account tracks the flow of goods, services, investment income, and transfer payments. This is where trade surpluses or deficits show up. The capital (financial) account tracks financial capital flows, such as foreign investment coming in and domestic investment going abroad. The critical rule: the two accounts must balance. A current account deficit must be matched by a capital account surplus, and vice versa. If we buy more goods than we sell, foreigners use that extra money to invest in our country."
+  },
+  {
+    id: 11, module: 6, moduleTitle: "International Finance",
+    question: "Is having a trade deficit necessarily a bad thing?",
+    answer: "Not necessarily. A trade deficit means the country imports more than it exports, but the flip side is that foreign capital is flowing into the country (capital account surplus). This foreign investment funds business expansion, infrastructure, and economic growth. A trade deficit can actually signal a strong economy that attracts investment from around the world. However, persistent large deficits do mean growing foreign debt, which is worth watching over the long run."
+  },
+  {
+    id: 12, module: 6, moduleTitle: "International Finance",
+    question: "Explain the different types of exchange rate policies.",
+    answer: "Floating exchange rate: the currency's value is set entirely by supply and demand in foreign exchange markets (like the US dollar). Soft peg: the government intervenes to keep the rate near a target but allows some fluctuation (like China historically). Hard peg: the government fixes the rate and commits to maintaining it with reserves (like Hong Kong's dollar pegged to the US dollar). Merged currency: multiple countries adopt one shared currency (like the euro in the Eurozone)."
+  },
+  {
+    id: 13, module: 6, moduleTitle: "International Finance",
+    question: "What determines exchange rates and why are they sometimes volatile?",
+    answer: "Exchange rates are determined by supply and demand for currencies, driven by: relative interest rates (higher rates attract foreign investment, strengthening the currency), relative inflation rates (higher inflation weakens a currency), trade balances, economic growth rates, political stability, and speculation. They can be volatile because expectations about these factors change rapidly with new information, and speculative trading amplifies short-term swings."
+  },
+  {
+    id: 14, module: 6, moduleTitle: "International Finance",
+    question: "Is it always better to have a strong currency?",
+    answer: "No. A strong currency makes imports cheaper for domestic consumers and traveling abroad less expensive. But it makes a country's exports more expensive for foreign buyers, hurting exporters and domestic manufacturers competing with imports. A weaker currency helps exporters sell abroad but makes imports more costly. There is no universally better position -- the ideal depends on the country's economic priorities at that moment."
+  },
+  {
+    id: 15, module: 7, moduleTitle: "Economic Growth",
+    question: "What is Potential GDP and how does it relate to the Production Possibilities Curve?",
+    answer: "Potential GDP is the maximum output an economy can produce when all resources (labor, capital, land, technology) are fully and efficiently employed. The Production Possibilities Curve (PPC/PPF) shows the maximum combinations of two goods an economy can produce. A point ON the curve represents full employment and efficiency (corresponding to potential GDP). A point inside the curve means underperformance (like a recession). A point outside is currently unattainable without more resources or better technology."
+  },
+  {
+    id: 16, module: 7, moduleTitle: "Economic Growth",
+    question: "How do you push the PPF outward? What are the determinants of economic growth?",
+    answer: "The PPF shifts outward when an economy increases its productive capacity. The key determinants: increases in physical capital (more factories, machines, infrastructure), increases in human capital (more education, training, skills), technological advances (new inventions and better production methods), and growth in the labor force (more workers). Investment in any of these areas expands what the economy can produce."
+  },
+  {
+    id: 17, module: 7, moduleTitle: "Economic Growth",
+    question: "What is productivity and how does a country improve it?",
+    answer: "Productivity is the amount of output per unit of labor input, measured as Real GDP per hour worked. It is the single most important driver of rising living standards. A country improves productivity by: investing in physical capital (better tools/equipment), investing in human capital (education and training), adopting new technology (innovations that make production more efficient), and improving institutions and infrastructure (better legal systems, roads, and communication networks)."
+  },
+  {
+    id: 18, module: 7, moduleTitle: "Economic Growth",
+    question: "What is the difference between Real GDP and Real GDP per capita?",
+    answer: "Real GDP measures total output of an economy adjusted for inflation -- the size of the economic pie. Real GDP per capita divides that by population -- the average slice per person. A country can have rising Real GDP (economic growth), but if population grows faster, Real GDP per capita falls and the average person is worse off. The standard of living depends on output per person, not total output. That's why economists focus on Real GDP per capita when comparing living standards."
+  },
+  {
+    id: 19, module: 7, moduleTitle: "Economic Growth",
+    question: "What is the Rule of 72? Give an example calculation.",
+    answer: "The Rule of 72 is a formula for estimating how many years it takes for something to double: divide 72 by the annual growth rate. Example: if GDP grows at 3% per year, it doubles in 72 / 3 = 24 years. At 6% growth, it doubles in 72 / 6 = 12 years. This shows why small differences in growth rates matter enormously over time: a country growing at 2% doubles in 36 years, while one at 4% doubles in just 18 years."
+  },
+  {
+    id: 20, module: 7, moduleTitle: "Economic Growth",
+    question: "What are the preconditions for economic growth?",
+    answer: "Three foundations are needed: Economic freedom (people can start businesses and keep profits without excessive government interference). Property rights (ownership including intellectual property is protected by law, giving incentive to invest and create). Functioning markets (prices freely rise and fall based on supply and demand, signaling where resources should flow). Without these, people lack the incentive and ability to invest, innovate, and take productive risks."
+  },
+  {
+    id: 21, module: 7, moduleTitle: "Economic Growth",
+    question: "What can the government do to spur long-term economic growth?",
+    answer: "Government can promote growth by: investing in education/training (human capital), investing in infrastructure (physical capital), funding basic R&D (technology), maintaining a stable legal system with strong property rights, keeping taxes/regulations at levels that encourage investment, promoting free trade, and running sound monetary/fiscal policy for stability. The central idea: government's role is to create conditions where the private sector can invest and innovate effectively."
+  },
+  {
+    id: 22, module: 7, moduleTitle: "Economic Growth",
+    question: "What are some negative aspects associated with economic growth?",
+    answer: "Environmental problems (pollution, resource depletion, climate change). Increased inequality (gains may not be shared evenly). Worker displacement (technology and trade can eliminate jobs). Opportunity cost (investing to grow means consuming less today). Stress and disruption to communities and traditional ways of life. These downsides don't mean growth is bad, but they are real costs that societies must manage."
+  },
+  {
+    id: 23, module: 8, moduleTitle: "AS/AD Model",
+    question: "Explain the AS/AD model: Potential GDP, AS, AD. What shifts each?",
+    answer: "The AS/AD model: price level on the vertical axis, Real GDP on the horizontal. Potential GDP is a vertical line at full employment output. Aggregate Demand (AD) slopes downward: lower prices mean more spending. Aggregate Supply (AS) slopes upward in the short run: higher prices mean more production. AD shifts right with more government spending, tax cuts, more confidence, more money supply, higher net exports (left with the opposite). AS shifts right with lower input costs, better technology, less regulation (left with the opposite). Potential GDP shifts right with more labor, capital, or technology."
+  },
+  {
+    id: 24, module: 8, moduleTitle: "AS/AD Model",
+    question: "How do you identify recessionary and inflationary gaps, and what policy tools address them?",
+    answer: "Recessionary gap: equilibrium GDP is left of Potential GDP. Economy below capacity, high unemployment, low inflation. Fix: expansionary fiscal policy (more spending or tax cuts) or expansionary monetary policy (lower interest rates). Both shift AD right, boosting GDP and lowering unemployment. Inflationary gap: equilibrium GDP is right of Potential GDP. Economy overheating, low unemployment, rising prices. Fix: contractionary fiscal policy (cut spending or raise taxes) or contractionary monetary policy (raise interest rates). Both shift AD left, cooling inflation."
+  },
+  {
+    id: 25, module: 8, moduleTitle: "AS/AD Model",
+    question: "What is the difference between demand-pull and cost-push inflation?",
+    answer: "Demand-pull inflation: AD shifts right (too much spending chasing too few goods). This is 'normal' inflation alongside growth: GDP rises, unemployment falls, prices rise. The economy is growing, just running hot. Cost-push inflation: AS shifts left (rising production costs like higher oil prices or supply disruptions). Prices rise while output FALLS and unemployment RISES. This toxic combination of stagnation plus inflation is called stagflation."
+  },
+  {
+    id: 26, module: 8, moduleTitle: "AS/AD Model",
+    question: "What is stagflation and why is it a dilemma for the Fed?",
+    answer: "Stagflation is high unemployment and rising inflation happening at the same time. It creates a dilemma because the Fed's tools work against each other: fighting inflation with contractionary policy (raising rates) makes unemployment worse; fighting recession with expansionary policy (lowering rates) makes inflation worse. There is no monetary policy move that fixes both at once, which is why stagflation is the hardest economic situation for policymakers."
+  }
+];
+
+/* =========================================
+   STATE
+   ========================================= */
+const state = {
+  currentIndex: 0,
+  isFlipped: false,
+  moduleFilter: 'all',
+  practiceFilter: false,
+  cardStatuses: {},
+  shuffledOrder: [],
+  filteredCards: [],
+  // Tariff
+  tariffView: 'free',
+  tariffStep: 0,
+  // AS/AD
+  adShift: 0,
+  asShift: 0,
+  scenario: 'equilibrium',
+  // Rule of 72
+  rateA: 2,
+  rateB: 6
+};
+
+/* =========================================
+   UTILITY
+   ========================================= */
+function loadProgress() {
+  try {
+    const saved = localStorage.getItem('graceEconProgress');
+    if (saved) state.cardStatuses = JSON.parse(saved);
+  } catch(e) {}
+}
+function saveProgress() {
+  try { localStorage.setItem('graceEconProgress', JSON.stringify(state.cardStatuses)); } catch(e) {}
+}
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+
+/* =========================================
+   FLASHCARDS
+   ========================================= */
+function getFilteredCards() {
+  let cards = CARDS;
+  if (state.moduleFilter !== 'all') {
+    cards = cards.filter(c => c.module === state.moduleFilter);
+  }
+  if (state.practiceFilter) {
+    cards = cards.filter(c => state.cardStatuses[c.id] === 'practice');
+  }
+  return cards;
+}
+
+function weightedShuffle(cards) {
+  const practice = cards.filter(c => state.cardStatuses[c.id] === 'practice');
+  const other = cards.filter(c => state.cardStatuses[c.id] !== 'practice');
+  return [...shuffleArray(practice), ...shuffleArray(other)];
+}
+
+function applyFilter() {
+  state.filteredCards = weightedShuffle(getFilteredCards());
+  state.currentIndex = 0;
+  state.isFlipped = false;
+  renderCard();
+  renderStats();
+}
+
+function renderFilters() {
+  const container = document.getElementById('filterControls');
+  const modules = [
+    { key: 'all', label: 'All' },
+    { key: 5, label: 'Mod 5' },
+    { key: 6, label: 'Mod 6' },
+    { key: 7, label: 'Mod 7' },
+    { key: 8, label: 'Mod 8' }
+  ];
+  let html = '';
+  modules.forEach(m => {
+    const active = state.moduleFilter === m.key ? ' active' : '';
+    html += `<button class="pill${active}" onclick="setModuleFilter(${typeof m.key === 'string' ? `'${m.key}'` : m.key})">${m.label}</button>`;
+  });
+  const pActive = state.practiceFilter ? ' active' : '';
+  html += `<button class="pill practice-filter${pActive}" onclick="togglePracticeFilter()">Need Practice</button>`;
+  html += `<button class="btn-shuffle" onclick="reshuffleCards()">Shuffle</button>`;
+  container.innerHTML = html;
+}
+
+function setModuleFilter(mod) {
+  state.moduleFilter = mod;
+  state.practiceFilter = false;
+  renderFilters();
+  applyFilter();
+}
+
+function togglePracticeFilter() {
+  state.practiceFilter = !state.practiceFilter;
+  renderFilters();
+  applyFilter();
+}
+
+function reshuffleCards() {
+  state.filteredCards = weightedShuffle(getFilteredCards());
+  state.currentIndex = 0;
+  state.isFlipped = false;
+  renderCard();
+}
+
+function renderCard() {
+  const cards = state.filteredCards;
+  if (cards.length === 0) {
+    document.getElementById('frontQuestion').textContent = state.practiceFilter ? 'No cards marked "Need Practice" yet!' : 'No cards in this filter.';
+    document.getElementById('frontBadge').textContent = '';
+    document.getElementById('frontBadge').className = 'card-module-badge';
+    document.getElementById('backAnswer').textContent = '';
+    document.getElementById('backBadge').textContent = '';
+    document.getElementById('cardProgress').textContent = '0 of 0';
+    document.getElementById('cardProgressBottom').textContent = '';
+    document.getElementById('cardInner').classList.remove('flipped');
+    return;
+  }
+  const card = cards[state.currentIndex];
+  const badgeClass = `card-module-badge badge-${card.module}`;
+  const badgeText = `Module ${card.module}`;
+  document.getElementById('frontBadge').className = badgeClass;
+  document.getElementById('frontBadge').textContent = badgeText;
+  document.getElementById('frontQuestion').textContent = card.question;
+  document.getElementById('backBadge').className = badgeClass;
+  document.getElementById('backBadge').textContent = badgeText;
+  document.getElementById('backAnswer').textContent = card.answer;
+  // Flip state
+  document.getElementById('cardInner').classList.toggle('flipped', state.isFlipped);
+  // Progress
+  const prog = `Card ${state.currentIndex + 1} of ${cards.length}`;
+  document.getElementById('cardProgress').textContent = prog;
+  document.getElementById('cardProgressBottom').textContent = prog;
+  // Mastery button states
+  const status = state.cardStatuses[card.id];
+  document.getElementById('btnGotIt').classList.toggle('selected', status === 'gotit');
+  document.getElementById('btnPractice').classList.toggle('selected', status === 'practice');
+  // Nav buttons
+  document.getElementById('btnPrev').disabled = state.currentIndex === 0;
+  document.getElementById('btnNext').disabled = state.currentIndex >= cards.length - 1;
+}
+
+function flipCard() {
+  if (state.filteredCards.length === 0) return;
+  state.isFlipped = !state.isFlipped;
+  renderCard();
+}
+
+function nextCard() {
+  if (state.currentIndex < state.filteredCards.length - 1) {
+    state.currentIndex++;
+    state.isFlipped = false;
+    renderCard();
+  }
+}
+
+function prevCard() {
+  if (state.currentIndex > 0) {
+    state.currentIndex--;
+    state.isFlipped = false;
+    renderCard();
+  }
+}
+
+function markCard(status) {
+  const card = state.filteredCards[state.currentIndex];
+  if (!card) return;
+  if (state.cardStatuses[card.id] === status) {
+    delete state.cardStatuses[card.id];
+  } else {
+    state.cardStatuses[card.id] = status;
+  }
+  saveProgress();
+  renderCard();
+  renderStats();
+  // Auto-advance after a short delay
+  setTimeout(() => {
+    if (state.currentIndex < state.filteredCards.length - 1) {
+      nextCard();
+    }
+  }, 400);
+}
+
+function renderStats() {
+  const mastered = CARDS.filter(c => state.cardStatuses[c.id] === 'gotit').length;
+  const practice = CARDS.filter(c => state.cardStatuses[c.id] === 'practice').length;
+  document.getElementById('statsMastered').textContent = mastered;
+  document.getElementById('statsPractice').textContent = practice;
+  document.getElementById('statsTotal').textContent = CARDS.length;
+  // Module progress
+  const mods = [5, 6, 7, 8];
+  const container = document.getElementById('moduleProgress');
+  container.innerHTML = mods.map(m => {
+    const total = CARDS.filter(c => c.module === m).length;
+    const done = CARDS.filter(c => c.module === m && state.cardStatuses[c.id] === 'gotit').length;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    return `<div class="module-prog-item">
+      <div class="label">Mod ${m}</div>
+      <div style="font-weight:700;font-size:0.85rem;">${done}/${total}</div>
+      <div class="prog-bar"><div class="prog-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// Swipe support
+let touchStartX = 0;
+function setupSwipe() {
+  const container = document.getElementById('cardContainer');
+  container.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+  container.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextCard();
+      else prevCard();
+    } else {
+      flipCard();
+    }
+  });
+  container.addEventListener('click', e => {
+    if (e.target.closest('.mastery-btn')) return;
+    flipCard();
+  });
+}
+
+/* =========================================
+   TARIFF GRAPH
+   ========================================= */
+const TG = {
+  // Graph boundaries
+  left: 70, right: 490, top: 30, bottom: 350,
+  // Economic ranges
+  qMax: 280, pMax: 220,
+  // Curves: P = intercept + slope * Q
+  supply: { intercept: 10, slope: 0.75 },
+  demand: { intercept: 210, slope: -0.75 },
+  worldPrice: 60,
+  tariffAmount: 30,
+  qToX(q) { return this.left + (q / this.qMax) * (this.right - this.left); },
+  pToY(p) { return this.bottom - (p / this.pMax) * (this.bottom - this.top); },
+  supplyP(q) { return this.supply.intercept + this.supply.slope * q; },
+  demandP(q) { return this.demand.intercept + this.demand.slope * q; },
+  supplyQ(p) { return (p - this.supply.intercept) / this.supply.slope; },
+  demandQ(p) { return (p - this.demand.intercept) / this.demand.slope; }
+};
+
+const tariffSteps = [
+  {
+    text: "This is the domestic market with no trade. The supply curve (orange) shows how much domestic producers will sell at each price. The demand curve (blue) shows how much consumers want to buy. They cross at the equilibrium price and quantity.",
+    show: ['axes', 'supply', 'demand', 'eqPoint']
+  },
+  {
+    text: "The world price (Pw) is below our domestic equilibrium. At this low price, domestic producers only supply a small amount (Qs), but consumers want a large amount (Qd). The gap between them is filled by imports from abroad.",
+    show: ['axes', 'supply', 'demand', 'worldPriceLine', 'importBracket']
+  },
+  {
+    text: "Under free trade, consumer surplus is the large blue triangle: the area between the demand curve and the world price. Consumers benefit hugely from the low import price. Producer surplus is the small orange triangle below the world price.",
+    show: ['axes', 'supply', 'demand', 'worldPriceLine', 'csFreeTrade', 'psFreeTrade']
+  },
+  {
+    text: "Now a tariff is imposed! The effective price rises from Pw to Pw + Tariff (the dashed line). This higher price changes everything: domestic producers supply more (Qs rises), but consumers buy less (Qd falls). Imports shrink.",
+    show: ['axes', 'supply', 'demand', 'worldPriceLine', 'tariffPriceLine', 'importBracketTariff']
+  },
+  {
+    text: "The green rectangle is government tariff revenue: the tariff amount multiplied by the quantity still imported. The red triangles are deadweight loss -- economic value that is destroyed and nobody gets. One triangle is from inefficient domestic production, the other from lost consumer purchases.",
+    show: ['axes', 'supply', 'demand', 'worldPriceLine', 'tariffPriceLine', 'csTariff', 'psTariff', 'govRevenue', 'dwlProd', 'dwlCons']
+  },
+  {
+    text: "The bottom line: Consumer surplus shrinks dramatically. Producers and the government gain, but their gains are LESS than what consumers lose. The two red deadweight loss triangles represent value that simply disappears. That is why economists say tariffs are inefficient.",
+    show: ['axes', 'supply', 'demand', 'worldPriceLine', 'tariffPriceLine', 'csTariff', 'psTariff', 'govRevenue', 'dwlProd', 'dwlCons']
+  }
+];
+
+function drawTariffGraph() {
+  const svg = document.getElementById('tariffSvg');
+  svg.innerHTML = '';
+  const T = TG;
+  const step = tariffSteps[state.tariffStep];
+  const show = new Set(step.show);
+  const isTariffView = state.tariffView === 'tariff';
+
+  // Calculate key quantities
+  const eqQ = (T.demand.intercept - T.supply.intercept) / (T.supply.slope - T.demand.slope);
+  const eqP = T.supplyP(eqQ);
+  const pw = T.worldPrice;
+  const pwt = pw + T.tariffAmount;
+  const qsFree = T.supplyQ(pw);
+  const qdFree = T.demandQ(pw);
+  const qsTariff = T.supplyQ(pwt);
+  const qdTariff = T.demandQ(pwt);
+
+  // Background
+  svg.appendChild(svgEl('rect', { x: 0, y: 0, width: 520, height: 400, fill: '#fafbfc' }));
+
+  // Axes
+  if (show.has('axes')) {
+    svg.appendChild(svgEl('line', { x1: T.left, y1: T.top, x2: T.left, y2: T.bottom, stroke: '#333', 'stroke-width': 2 }));
+    svg.appendChild(svgEl('line', { x1: T.left, y1: T.bottom, x2: T.right, y2: T.bottom, stroke: '#333', 'stroke-width': 2 }));
+    const yLabel = svgEl('text', { x: 18, y: (T.top + T.bottom) / 2, fill: '#555', 'font-size': '12', 'font-weight': '600', 'text-anchor': 'middle', transform: `rotate(-90, 18, ${(T.top + T.bottom) / 2})` });
+    yLabel.textContent = 'Price';
+    svg.appendChild(yLabel);
+    const xLabel = svgEl('text', { x: (T.left + T.right) / 2, y: T.bottom + 38, fill: '#555', 'font-size': '12', 'font-weight': '600', 'text-anchor': 'middle' });
+    xLabel.textContent = 'Quantity';
+    svg.appendChild(xLabel);
+  }
+
+  // Consumer surplus (free trade)
+  if (show.has('csFreeTrade')) {
+    const pts = `${T.qToX(0)},${T.pToY(T.demand.intercept)} ${T.qToX(qdFree)},${T.pToY(pw)} ${T.qToX(0)},${T.pToY(pw)}`;
+    svg.appendChild(svgEl('polygon', { points: pts, fill: '#3b82f6', opacity: '0.25', stroke: '#3b82f6', 'stroke-width': 1 }));
+    const csLabel = svgEl('text', { x: T.qToX(qdFree * 0.25), y: T.pToY((T.demand.intercept + pw) / 2), fill: '#1e40af', 'font-size': '13', 'font-weight': '700' });
+    csLabel.textContent = 'CS';
+    svg.appendChild(csLabel);
+  }
+
+  // Producer surplus (free trade)
+  if (show.has('psFreeTrade')) {
+    const pts = `${T.qToX(0)},${T.pToY(T.supply.intercept)} ${T.qToX(qsFree)},${T.pToY(pw)} ${T.qToX(0)},${T.pToY(pw)}`;
+    svg.appendChild(svgEl('polygon', { points: pts, fill: '#f97316', opacity: '0.3', stroke: '#f97316', 'stroke-width': 1 }));
+    const psLabel = svgEl('text', { x: T.qToX(qsFree * 0.2), y: T.pToY((T.supply.intercept + pw) / 2), fill: '#c2410c', 'font-size': '13', 'font-weight': '700' });
+    psLabel.textContent = 'PS';
+    svg.appendChild(psLabel);
+  }
+
+  // Consumer surplus (with tariff)
+  if (show.has('csTariff')) {
+    const pts = `${T.qToX(0)},${T.pToY(T.demand.intercept)} ${T.qToX(qdTariff)},${T.pToY(pwt)} ${T.qToX(0)},${T.pToY(pwt)}`;
+    svg.appendChild(svgEl('polygon', { points: pts, fill: '#3b82f6', opacity: '0.25', stroke: '#3b82f6', 'stroke-width': 1 }));
+    const csLabel = svgEl('text', { x: T.qToX(qdTariff * 0.2), y: T.pToY((T.demand.intercept + pwt) / 2), fill: '#1e40af', 'font-size': '13', 'font-weight': '700' });
+    csLabel.textContent = 'CS';
+    svg.appendChild(csLabel);
+  }
+
+  // Producer surplus (with tariff)
+  if (show.has('psTariff')) {
+    const pts = `${T.qToX(0)},${T.pToY(T.supply.intercept)} ${T.qToX(qsTariff)},${T.pToY(pwt)} ${T.qToX(0)},${T.pToY(pwt)}`;
+    svg.appendChild(svgEl('polygon', { points: pts, fill: '#f97316', opacity: '0.3', stroke: '#f97316', 'stroke-width': 1 }));
+    const psLabel = svgEl('text', { x: T.qToX(qsTariff * 0.15), y: T.pToY((T.supply.intercept + pwt) / 2), fill: '#c2410c', 'font-size': '13', 'font-weight': '700' });
+    psLabel.textContent = 'PS';
+    svg.appendChild(psLabel);
+  }
+
+  // Government revenue
+  if (show.has('govRevenue')) {
+    const pts = `${T.qToX(qsTariff)},${T.pToY(pw)} ${T.qToX(qdTariff)},${T.pToY(pw)} ${T.qToX(qdTariff)},${T.pToY(pwt)} ${T.qToX(qsTariff)},${T.pToY(pwt)}`;
+    svg.appendChild(svgEl('polygon', { points: pts, fill: '#22c55e', opacity: '0.3', stroke: '#16a34a', 'stroke-width': 1.5 }));
+    const gLabel = svgEl('text', { x: (T.qToX(qsTariff) + T.qToX(qdTariff)) / 2, y: (T.pToY(pw) + T.pToY(pwt)) / 2 + 4, fill: '#15803d', 'font-size': '11', 'font-weight': '700', 'text-anchor': 'middle' });
+    gLabel.textContent = 'Gov Revenue';
+    svg.appendChild(gLabel);
+  }
+
+  // DWL production
+  if (show.has('dwlProd')) {
+    const pts = `${T.qToX(qsFree)},${T.pToY(pw)} ${T.qToX(qsTariff)},${T.pToY(pwt)} ${T.qToX(qsTariff)},${T.pToY(pw)}`;
+    svg.appendChild(svgEl('polygon', { points: pts, fill: '#ef4444', opacity: '0.35', stroke: '#dc2626', 'stroke-width': 1.5 }));
+    const dLabel = svgEl('text', { x: T.qToX((qsFree + qsTariff) / 2), y: T.pToY(pw) - 6, fill: '#dc2626', 'font-size': '10', 'font-weight': '700', 'text-anchor': 'middle' });
+    dLabel.textContent = 'DWL';
+    svg.appendChild(dLabel);
+  }
+
+  // DWL consumption
+  if (show.has('dwlCons')) {
+    const pts = `${T.qToX(qdTariff)},${T.pToY(pwt)} ${T.qToX(qdFree)},${T.pToY(pw)} ${T.qToX(qdTariff)},${T.pToY(pw)}`;
+    svg.appendChild(svgEl('polygon', { points: pts, fill: '#ef4444', opacity: '0.35', stroke: '#dc2626', 'stroke-width': 1.5 }));
+    const dLabel = svgEl('text', { x: T.qToX((qdTariff + qdFree) / 2), y: T.pToY(pw) - 6, fill: '#dc2626', 'font-size': '10', 'font-weight': '700', 'text-anchor': 'middle' });
+    dLabel.textContent = 'DWL';
+    svg.appendChild(dLabel);
+  }
+
+  // Supply curve
+  if (show.has('supply')) {
+    const q0 = 0, q1 = T.qMax;
+    const p0 = T.supplyP(q0), p1 = T.supplyP(q1);
+    svg.appendChild(svgEl('line', {
+      x1: T.qToX(q0), y1: T.pToY(Math.max(0, p0)),
+      x2: T.qToX(Math.min(q1, (T.pMax - T.supply.intercept) / T.supply.slope)),
+      y2: T.pToY(Math.min(T.pMax, p1)),
+      stroke: '#f97316', 'stroke-width': 3
+    }));
+    const sLabel = svgEl('text', { x: T.qToX(T.supplyQ(T.pMax * 0.85)) + 10, y: T.pToY(T.pMax * 0.85) - 4, fill: '#ea580c', 'font-size': '14', 'font-weight': '700' });
+    sLabel.textContent = 'S';
+    svg.appendChild(sLabel);
+  }
+
+  // Demand curve
+  if (show.has('demand')) {
+    const q0 = 0, q1 = T.demandQ(0);
+    svg.appendChild(svgEl('line', {
+      x1: T.qToX(q0), y1: T.pToY(T.demand.intercept),
+      x2: T.qToX(Math.min(q1, T.qMax)), y2: T.pToY(Math.max(0, T.demandP(Math.min(q1, T.qMax)))),
+      stroke: '#3b82f6', 'stroke-width': 3
+    }));
+    const dLabel = svgEl('text', { x: T.qToX(T.demandQ(T.pMax * 0.85)) - 16, y: T.pToY(T.pMax * 0.85) - 4, fill: '#2563eb', 'font-size': '14', 'font-weight': '700' });
+    dLabel.textContent = 'D';
+    svg.appendChild(dLabel);
+  }
+
+  // Equilibrium point
+  if (show.has('eqPoint')) {
+    svg.appendChild(svgEl('circle', { cx: T.qToX(eqQ), cy: T.pToY(eqP), r: 5, fill: '#333' }));
+    const eLabel = svgEl('text', { x: T.qToX(eqQ) + 10, y: T.pToY(eqP) - 8, fill: '#333', 'font-size': '11', 'font-weight': '600' });
+    eLabel.textContent = 'Equilibrium';
+    svg.appendChild(eLabel);
+  }
+
+  // World price line
+  if (show.has('worldPriceLine')) {
+    svg.appendChild(svgEl('line', {
+      x1: T.left, y1: T.pToY(pw), x2: T.right, y2: T.pToY(pw),
+      stroke: '#059669', 'stroke-width': 2, 'stroke-dasharray': '6,4'
+    }));
+    const pwLabel = svgEl('text', { x: T.right + 4, y: T.pToY(pw) + 4, fill: '#059669', 'font-size': '11', 'font-weight': '700' });
+    pwLabel.textContent = 'Pw';
+    svg.appendChild(pwLabel);
+    // Qs and Qd markers
+    svg.appendChild(svgEl('line', { x1: T.qToX(qsFree), y1: T.pToY(pw), x2: T.qToX(qsFree), y2: T.bottom, stroke: '#999', 'stroke-width': 1, 'stroke-dasharray': '3,3' }));
+    svg.appendChild(svgEl('line', { x1: T.qToX(qdFree), y1: T.pToY(pw), x2: T.qToX(qdFree), y2: T.bottom, stroke: '#999', 'stroke-width': 1, 'stroke-dasharray': '3,3' }));
+    const qsLabel = svgEl('text', { x: T.qToX(qsFree), y: T.bottom + 16, fill: '#555', 'font-size': '11', 'font-weight': '600', 'text-anchor': 'middle' });
+    qsLabel.textContent = 'Qs';
+    svg.appendChild(qsLabel);
+    const qdLabel = svgEl('text', { x: T.qToX(qdFree), y: T.bottom + 16, fill: '#555', 'font-size': '11', 'font-weight': '600', 'text-anchor': 'middle' });
+    qdLabel.textContent = 'Qd';
+    svg.appendChild(qdLabel);
+  }
+
+  // Tariff price line
+  if (show.has('tariffPriceLine')) {
+    svg.appendChild(svgEl('line', {
+      x1: T.left, y1: T.pToY(pwt), x2: T.right, y2: T.pToY(pwt),
+      stroke: '#dc2626', 'stroke-width': 2, 'stroke-dasharray': '8,4'
+    }));
+    const ptLabel = svgEl('text', { x: T.right + 4, y: T.pToY(pwt) + 4, fill: '#dc2626', 'font-size': '11', 'font-weight': '700' });
+    ptLabel.textContent = 'Pw+T';
+    svg.appendChild(ptLabel);
+  }
+
+  // Import bracket (free trade)
+  if (show.has('importBracket')) {
+    const y = T.pToY(pw) + 20;
+    svg.appendChild(svgEl('line', { x1: T.qToX(qsFree), y1: y - 5, x2: T.qToX(qsFree), y2: y + 5, stroke: '#333', 'stroke-width': 2 }));
+    svg.appendChild(svgEl('line', { x1: T.qToX(qsFree), y1: y, x2: T.qToX(qdFree), y2: y, stroke: '#333', 'stroke-width': 2 }));
+    svg.appendChild(svgEl('line', { x1: T.qToX(qdFree), y1: y - 5, x2: T.qToX(qdFree), y2: y + 5, stroke: '#333', 'stroke-width': 2 }));
+    const impLabel = svgEl('text', { x: (T.qToX(qsFree) + T.qToX(qdFree)) / 2, y: y + 18, fill: '#333', 'font-size': '12', 'font-weight': '700', 'text-anchor': 'middle' });
+    impLabel.textContent = 'Imports';
+    svg.appendChild(impLabel);
+  }
+
+  // Import bracket (tariff)
+  if (show.has('importBracketTariff')) {
+    const y = T.pToY(pwt) - 16;
+    svg.appendChild(svgEl('line', { x1: T.qToX(qsTariff), y1: y - 5, x2: T.qToX(qsTariff), y2: y + 5, stroke: '#dc2626', 'stroke-width': 2 }));
+    svg.appendChild(svgEl('line', { x1: T.qToX(qsTariff), y1: y, x2: T.qToX(qdTariff), y2: y, stroke: '#dc2626', 'stroke-width': 2 }));
+    svg.appendChild(svgEl('line', { x1: T.qToX(qdTariff), y1: y - 5, x2: T.qToX(qdTariff), y2: y + 5, stroke: '#dc2626', 'stroke-width': 2 }));
+    const impLabel = svgEl('text', { x: (T.qToX(qsTariff) + T.qToX(qdTariff)) / 2, y: y - 8, fill: '#dc2626', 'font-size': '11', 'font-weight': '700', 'text-anchor': 'middle' });
+    impLabel.textContent = 'Imports (smaller)';
+    svg.appendChild(impLabel);
+    // Also show Qs' and Qd' markers
+    svg.appendChild(svgEl('line', { x1: T.qToX(qsTariff), y1: T.pToY(pwt), x2: T.qToX(qsTariff), y2: T.bottom, stroke: '#dc2626', 'stroke-width': 1, 'stroke-dasharray': '3,3' }));
+    svg.appendChild(svgEl('line', { x1: T.qToX(qdTariff), y1: T.pToY(pwt), x2: T.qToX(qdTariff), y2: T.bottom, stroke: '#dc2626', 'stroke-width': 1, 'stroke-dasharray': '3,3' }));
+    const qsLabel2 = svgEl('text', { x: T.qToX(qsTariff), y: T.bottom + 28, fill: '#dc2626', 'font-size': '10', 'font-weight': '600', 'text-anchor': 'middle' });
+    qsLabel2.textContent = "Qs'";
+    svg.appendChild(qsLabel2);
+    const qdLabel2 = svgEl('text', { x: T.qToX(qdTariff), y: T.bottom + 28, fill: '#dc2626', 'font-size': '10', 'font-weight': '600', 'text-anchor': 'middle' });
+    qdLabel2.textContent = "Qd'";
+    svg.appendChild(qdLabel2);
+  }
+
+  // Walkthrough text
+  document.getElementById('tariffWalkthroughText').textContent = step.text;
+  document.getElementById('tariffStepIndicator').textContent = `Step ${state.tariffStep + 1} of ${tariffSteps.length}`;
+  document.getElementById('tariffPrevBtn').disabled = state.tariffStep === 0;
+  document.getElementById('tariffNextBtn').disabled = state.tariffStep === tariffSteps.length - 1;
+}
+
+function setTariffView(view) {
+  state.tariffView = view;
+  state.tariffStep = view === 'free' ? 0 : 3;
+  document.getElementById('btnFreeTrade').classList.toggle('active', view === 'free');
+  document.getElementById('btnTariff').classList.toggle('active', view === 'tariff');
+  drawTariffGraph();
+}
+
+function tariffStepNext() {
+  if (state.tariffStep < tariffSteps.length - 1) {
+    state.tariffStep++;
+    if (state.tariffStep >= 3) {
+      state.tariffView = 'tariff';
+      document.getElementById('btnFreeTrade').classList.remove('active');
+      document.getElementById('btnTariff').classList.add('active');
+    }
+    drawTariffGraph();
+  }
+}
+
+function tariffStepPrev() {
+  if (state.tariffStep > 0) {
+    state.tariffStep--;
+    if (state.tariffStep < 3) {
+      state.tariffView = 'free';
+      document.getElementById('btnFreeTrade').classList.add('active');
+      document.getElementById('btnTariff').classList.remove('active');
+    }
+    drawTariffGraph();
+  }
+}
+
+/* =========================================
+   AS/AD GRAPH
+   ========================================= */
+const ASAD = {
+  left: 70, right: 490, top: 30, bottom: 350,
+  yMax: 200, plMax: 200,
+  potentialGDP: 100,
+  ad: { intercept: 250, slope: -1.5 },
+  as: { intercept: 10, slope: 0.9 },
+  yToX(y) { return this.left + (y / this.yMax) * (this.right - this.left); },
+  plToY(pl) { return this.bottom - (pl / this.plMax) * (this.bottom - this.top); },
+};
+
+const scenarioData = {
+  equilibrium: {
+    adShift: 0, asShift: 0,
+    title: 'Equilibrium at Potential GDP',
+    explanation: '<strong>The economy is at full employment.</strong> Aggregate Demand and Aggregate Supply intersect right at Potential GDP. Unemployment is at its natural rate, GDP is at capacity, and inflation is stable. No policy intervention is needed.'
+  },
+  recessionary: {
+    adShift: -30, asShift: 0,
+    title: 'Recessionary Gap',
+    explanation: '<strong>GDP is below Potential GDP.</strong> Unemployment is high, growth is sluggish, and inflation is low. <strong>Policy fix:</strong> Congress uses expansionary fiscal policy (increase spending or cut taxes). The Fed uses expansionary monetary policy (lower interest rates, increase money supply). Both shift AD to the right to close the gap.'
+  },
+  inflationary: {
+    adShift: 30, asShift: 0,
+    title: 'Inflationary Gap',
+    explanation: '<strong>GDP is above Potential GDP.</strong> The economy is overheating. Unemployment is very low, but inflation is rising fast. <strong>Policy fix:</strong> Congress uses contractionary fiscal policy (cut spending or raise taxes). The Fed uses contractionary monetary policy (raise interest rates). Both shift AD to the left to cool the economy.'
+  },
+  stagflation: {
+    adShift: 0, asShift: -30,
+    title: 'Stagflation (Cost-Push)',
+    explanation: '<strong>AS has shifted left</strong> (e.g., oil price spike). Prices rise AND output falls. Unemployment is high AND inflation is high. <strong>The Fed\'s dilemma:</strong> Fighting inflation (raising rates) makes unemployment worse. Fighting unemployment (lowering rates) makes inflation worse. There is no good monetary policy option -- this is why stagflation is so dangerous.'
+  }
+};
+
+function computeASAD() {
+  const adIntercept = ASAD.ad.intercept + ASAD.ad.slope * (-state.adShift);
+  const asIntercept = ASAD.as.intercept + ASAD.as.slope * (-state.asShift);
+  // AD: PL = adIntercept + slope * Y → but slope is negative, stored as -1.5
+  // Actually: AD is PL = 250 - 1.5*Y, shifted: PL = 250 - 1.5*(Y - adShift) = 250 + 1.5*adShift - 1.5*Y
+  const adI = ASAD.ad.intercept - ASAD.ad.slope * state.adShift; // 250 - (-1.5)*shift = 250 + 1.5*shift
+  const asI = ASAD.as.intercept - ASAD.as.slope * state.asShift; // 10 - 0.9*shift
+  // Equilibrium: adI + adSlope*Y = asI + asSlope*Y
+  // adI - asI = (asSlope - adSlope) * Y
+  const eqY = (adI - asI) / (ASAD.as.slope - ASAD.ad.slope);
+  const eqPL = asI + ASAD.as.slope * eqY;
+  return { adI, asI, eqY, eqPL };
+}
+
+function drawASADGraph() {
+  const svg = document.getElementById('asadSvg');
+  svg.innerHTML = '';
+  const A = ASAD;
+  const { adI, asI, eqY, eqPL } = computeASAD();
+
+  svg.appendChild(svgEl('rect', { x: 0, y: 0, width: 520, height: 400, fill: '#fafbfc' }));
+
+  // Axes
+  svg.appendChild(svgEl('line', { x1: A.left, y1: A.top, x2: A.left, y2: A.bottom, stroke: '#333', 'stroke-width': 2 }));
+  svg.appendChild(svgEl('line', { x1: A.left, y1: A.bottom, x2: A.right, y2: A.bottom, stroke: '#333', 'stroke-width': 2 }));
+  const yLabel = svgEl('text', { x: 16, y: (A.top + A.bottom) / 2, fill: '#555', 'font-size': '11', 'font-weight': '600', 'text-anchor': 'middle', transform: `rotate(-90, 16, ${(A.top + A.bottom) / 2})` });
+  yLabel.textContent = 'Price Level';
+  svg.appendChild(yLabel);
+  const xLabel = svgEl('text', { x: (A.left + A.right) / 2, y: A.bottom + 38, fill: '#555', 'font-size': '12', 'font-weight': '600', 'text-anchor': 'middle' });
+  xLabel.textContent = 'Real GDP';
+  svg.appendChild(xLabel);
+
+  // Potential GDP line
+  const xPot = A.yToX(A.potentialGDP);
+  svg.appendChild(svgEl('line', { x1: xPot, y1: A.top + 10, x2: xPot, y2: A.bottom, stroke: '#6b7280', 'stroke-width': 2, 'stroke-dasharray': '8,5' }));
+  const potLabel = svgEl('text', { x: xPot, y: A.top + 6, fill: '#6b7280', 'font-size': '11', 'font-weight': '700', 'text-anchor': 'middle' });
+  potLabel.textContent = 'Potential GDP';
+  svg.appendChild(potLabel);
+
+  // AD curve
+  const adY0 = 10, adY1 = A.yMax - 10;
+  const adPL0 = adI + ASAD.ad.slope * adY0;
+  const adPL1 = adI + ASAD.ad.slope * adY1;
+  svg.appendChild(svgEl('line', {
+    x1: A.yToX(adY0), y1: A.plToY(Math.min(A.plMax, adPL0)),
+    x2: A.yToX(adY1), y2: A.plToY(Math.max(0, adPL1)),
+    stroke: '#3b82f6', 'stroke-width': 3
+  }));
+  const adLabel = svgEl('text', { x: A.yToX(adY1) + 8, y: A.plToY(Math.max(10, adPL1)) + 4, fill: '#2563eb', 'font-size': '14', 'font-weight': '700' });
+  adLabel.textContent = 'AD';
+  svg.appendChild(adLabel);
+
+  // SRAS curve
+  const asY0 = 10, asY1 = A.yMax - 10;
+  const asPL0 = asI + ASAD.as.slope * asY0;
+  const asPL1 = asI + ASAD.as.slope * asY1;
+  svg.appendChild(svgEl('line', {
+    x1: A.yToX(asY0), y1: A.plToY(Math.max(0, asPL0)),
+    x2: A.yToX(asY1), y2: A.plToY(Math.min(A.plMax, asPL1)),
+    stroke: '#f97316', 'stroke-width': 3
+  }));
+  const asLabel = svgEl('text', { x: A.yToX(asY1) + 8, y: A.plToY(Math.min(A.plMax - 10, asPL1)) + 4, fill: '#ea580c', 'font-size': '14', 'font-weight': '700' });
+  asLabel.textContent = 'SRAS';
+  svg.appendChild(asLabel);
+
+  // Gap shading
+  if (Math.abs(eqY - A.potentialGDP) > 3) {
+    const gapLeft = Math.min(eqY, A.potentialGDP);
+    const gapRight = Math.max(eqY, A.potentialGDP);
+    const isRecessionary = eqY < A.potentialGDP;
+    const gapColor = isRecessionary ? '#3b82f6' : '#ef4444';
+    svg.appendChild(svgEl('rect', {
+      x: A.yToX(gapLeft), y: A.plToY(eqPL) - 2,
+      width: A.yToX(gapRight) - A.yToX(gapLeft), height: 4,
+      fill: gapColor, opacity: '0.6'
+    }));
+    // Gap bracket
+    const bracketY = A.bottom - 18;
+    svg.appendChild(svgEl('line', { x1: A.yToX(gapLeft), y1: bracketY - 4, x2: A.yToX(gapLeft), y2: bracketY + 4, stroke: gapColor, 'stroke-width': 2 }));
+    svg.appendChild(svgEl('line', { x1: A.yToX(gapLeft), y1: bracketY, x2: A.yToX(gapRight), y2: bracketY, stroke: gapColor, 'stroke-width': 2 }));
+    svg.appendChild(svgEl('line', { x1: A.yToX(gapRight), y1: bracketY - 4, x2: A.yToX(gapRight), y2: bracketY + 4, stroke: gapColor, 'stroke-width': 2 }));
+    const gapLabel = svgEl('text', { x: (A.yToX(gapLeft) + A.yToX(gapRight)) / 2, y: bracketY - 8, fill: gapColor, 'font-size': '10', 'font-weight': '700', 'text-anchor': 'middle' });
+    gapLabel.textContent = isRecessionary ? 'Recessionary Gap' : 'Inflationary Gap';
+    svg.appendChild(gapLabel);
+  }
+
+  // Equilibrium point
+  if (eqY > 0 && eqY < A.yMax && eqPL > 0 && eqPL < A.plMax) {
+    svg.appendChild(svgEl('circle', { cx: A.yToX(eqY), cy: A.plToY(eqPL), r: 6, fill: '#333' }));
+    // Dashed lines to axes
+    svg.appendChild(svgEl('line', { x1: A.yToX(eqY), y1: A.plToY(eqPL), x2: A.yToX(eqY), y2: A.bottom, stroke: '#999', 'stroke-width': 1, 'stroke-dasharray': '3,3' }));
+    svg.appendChild(svgEl('line', { x1: A.left, y1: A.plToY(eqPL), x2: A.yToX(eqY), y2: A.plToY(eqPL), stroke: '#999', 'stroke-width': 1, 'stroke-dasharray': '3,3' }));
+  }
+
+  // Indicators
+  renderASADIndicators(eqY, eqPL);
+  // Explanation
+  renderASADExplanation();
+}
+
+function renderASADIndicators(eqY, eqPL) {
+  const gap = eqY - ASAD.potentialGDP;
+  const baselinePL = 100;
+  let gdpStatus, unempStatus, inflStatus;
+  let gdpText, unempText, inflText;
+
+  if (Math.abs(gap) <= 3) {
+    gdpStatus = 'neutral'; gdpText = 'At Potential';
+    unempStatus = 'neutral'; unempText = 'Natural Rate';
+    inflStatus = 'neutral'; inflText = 'Stable';
+  } else if (gap > 0) {
+    gdpStatus = 'good'; gdpText = 'Above Potential';
+    unempStatus = 'good'; unempText = 'Very Low';
+    inflStatus = 'bad'; inflText = 'Rising';
+  } else {
+    gdpStatus = 'bad'; gdpText = 'Below Potential';
+    unempStatus = 'bad'; unempText = 'High';
+    inflStatus = 'good'; inflText = 'Low';
+  }
+
+  // Special case: stagflation (AS shifted left means both bad)
+  if (state.asShift < -5) {
+    inflStatus = 'bad'; inflText = 'Rising';
+  }
+
+  document.getElementById('asadIndicators').innerHTML = `
+    <div class="indicator ${gdpStatus}">
+      <div class="ind-label">GDP Growth</div>
+      <div class="ind-value">${gdpText}</div>
+    </div>
+    <div class="indicator ${unempStatus}">
+      <div class="ind-label">Unemployment</div>
+      <div class="ind-value">${unempText}</div>
+    </div>
+    <div class="indicator ${inflStatus}">
+      <div class="ind-label">Inflation</div>
+      <div class="ind-value">${inflText}</div>
+    </div>
+  `;
+}
+
+function renderASADExplanation() {
+  const scenario = Object.entries(scenarioData).find(([key, data]) =>
+    data.adShift === state.adShift && data.asShift === state.asShift
+  );
+  if (scenario) {
+    document.getElementById('asadExplanation').innerHTML = scenario[1].explanation;
+  } else {
+    // Custom shift
+    const { eqY } = computeASAD();
+    const gap = eqY - ASAD.potentialGDP;
+    let text = '';
+    if (state.asShift < -5 && Math.abs(state.adShift) < 5) {
+      text = '<strong>Cost-push scenario.</strong> AS has shifted left, pushing prices up while reducing output. This creates stagflation: the worst of both worlds.';
+    } else if (gap > 3) {
+      text = '<strong>Inflationary pressure.</strong> The economy is producing above potential. Consider contractionary policy to cool things down.';
+    } else if (gap < -3) {
+      text = '<strong>Recessionary pressure.</strong> The economy is below potential. Consider expansionary policy to boost demand.';
+    } else {
+      text = '<strong>Near equilibrium.</strong> The economy is close to potential GDP.';
+    }
+    document.getElementById('asadExplanation').innerHTML = text;
+  }
+}
+
+function setScenario(name) {
+  const data = scenarioData[name];
+  state.adShift = data.adShift;
+  state.asShift = data.asShift;
+  state.scenario = name;
+  document.querySelectorAll('.graph-btn.scenario').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('scn' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+  drawASADGraph();
+}
+
+function shiftCurve(curve, direction) {
+  const step = 15;
+  if (curve === 'ad') {
+    state.adShift = Math.max(-60, Math.min(60, state.adShift + direction * step));
+  } else {
+    state.asShift = Math.max(-60, Math.min(60, state.asShift + direction * step));
+  }
+  state.scenario = 'custom';
+  document.querySelectorAll('.graph-btn.scenario').forEach(btn => btn.classList.remove('active'));
+  drawASADGraph();
+}
+
+/* =========================================
+   RULE OF 72
+   ========================================= */
+function updateMainCalc() {
+  const rate = parseFloat(document.getElementById('mainSlider').value);
+  const years = Math.round(72 / rate);
+  document.getElementById('mainRateVal').textContent = rate + '%';
+  document.getElementById('mainResult').textContent = years;
+  document.getElementById('mainFormula').textContent = rate;
+  document.getElementById('mainFormulaResult').textContent = years;
+}
+
+function updateComparison() {
+  state.rateA = parseFloat(document.getElementById('sliderA').value);
+  state.rateB = parseFloat(document.getElementById('sliderB').value);
+  const yearsA = Math.round(72 / state.rateA);
+  const yearsB = Math.round(72 / state.rateB);
+  document.getElementById('rateValA').textContent = state.rateA + '%';
+  document.getElementById('rateValB').textContent = state.rateB + '%';
+  document.getElementById('doublesA').textContent = yearsA;
+  document.getElementById('doublesB').textContent = yearsB;
+  document.getElementById('legendA').textContent = state.rateA + '%';
+  document.getElementById('legendB').textContent = state.rateB + '%';
+  drawGrowthChart();
+}
+
+function drawGrowthChart() {
+  const svg = document.getElementById('growthChart');
+  svg.innerHTML = '';
+  const rA = state.rateA / 100, rB = state.rateB / 100;
+  const years = 72;
+
+  // Compute max value for scaling
+  const maxVal = Math.max(100 * Math.pow(1 + rA, years), 100 * Math.pow(1 + rB, years));
+
+  // Chart area
+  const left = 70, right = 530, top = 20, bottom = 280;
+  const chartW = right - left, chartH = bottom - top;
+
+  svg.appendChild(svgEl('rect', { x: 0, y: 0, width: 560, height: 320, fill: '#fafbfc' }));
+
+  // Y-axis (use log-ish scale for readability when maxVal is huge)
+  // Actually, let's use linear scale but cap display to show the dramatic difference
+  const useLog = maxVal > 5000;
+
+  function valToY(v) {
+    if (useLog) {
+      const logMin = Math.log(100);
+      const logMax = Math.log(maxVal);
+      return bottom - ((Math.log(Math.max(v, 100)) - logMin) / (logMax - logMin)) * chartH;
+    }
+    return bottom - (v / maxVal) * chartH;
+  }
+
+  // Axes
+  svg.appendChild(svgEl('line', { x1: left, y1: top, x2: left, y2: bottom, stroke: '#333', 'stroke-width': 2 }));
+  svg.appendChild(svgEl('line', { x1: left, y1: bottom, x2: right, y2: bottom, stroke: '#333', 'stroke-width': 2 }));
+
+  // X-axis labels
+  const yearMarks = [0, 12, 24, 36, 48, 60, 72];
+  yearMarks.forEach(yr => {
+    const x = left + (yr / years) * chartW;
+    svg.appendChild(svgEl('line', { x1: x, y1: bottom, x2: x, y2: bottom + 5, stroke: '#999', 'stroke-width': 1 }));
+    const label = svgEl('text', { x, y: bottom + 18, fill: '#666', 'font-size': '10', 'text-anchor': 'middle' });
+    label.textContent = yr + 'yr';
+    svg.appendChild(label);
+    // Grid lines
+    if (yr > 0) {
+      svg.appendChild(svgEl('line', { x1: x, y1: top, x2: x, y2: bottom, stroke: '#e5e7eb', 'stroke-width': 1 }));
+    }
+  });
+
+  // Y-axis labels
+  const yTicks = useLog ? [100, 500, 1000, 5000, Math.round(maxVal)] : [100, Math.round(maxVal / 4), Math.round(maxVal / 2), Math.round(maxVal * 3 / 4), Math.round(maxVal)];
+  // Simplify: just show a few meaningful ticks
+  const cleanTicks = useLog
+    ? [100, 200, 500, 1000, 2000, 5000, 10000, 50000].filter(v => v <= maxVal * 1.1)
+    : [100, Math.round(maxVal * 0.25), Math.round(maxVal * 0.5), Math.round(maxVal)];
+
+  cleanTicks.forEach(v => {
+    const y = valToY(v);
+    if (y >= top && y <= bottom) {
+      svg.appendChild(svgEl('line', { x1: left - 4, y1: y, x2: left, y2: y, stroke: '#999', 'stroke-width': 1 }));
+      svg.appendChild(svgEl('line', { x1: left, y1: y, x2: right, y2: y, stroke: '#f0f0f0', 'stroke-width': 1 }));
+      const label = svgEl('text', { x: left - 8, y: y + 4, fill: '#666', 'font-size': '9', 'text-anchor': 'end' });
+      label.textContent = v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1) + 'k' : v;
+      svg.appendChild(label);
+    }
+  });
+
+  // Draw line A
+  let pointsA = '';
+  let pointsB = '';
+  const step = 2;
+  for (let yr = 0; yr <= years; yr += step) {
+    const x = left + (yr / years) * chartW;
+    const vA = 100 * Math.pow(1 + rA, yr);
+    const vB = 100 * Math.pow(1 + rB, yr);
+    pointsA += `${x},${valToY(vA)} `;
+    pointsB += `${x},${valToY(vB)} `;
+  }
+
+  // Area fills
+  const areaA = pointsA + `${right},${bottom} ${left},${bottom}`;
+  svg.appendChild(svgEl('polygon', { points: areaA, fill: '#1a7a6d', opacity: '0.1' }));
+  const areaB = pointsB + `${right},${bottom} ${left},${bottom}`;
+  svg.appendChild(svgEl('polygon', { points: areaB, fill: '#8b5cf6', opacity: '0.1' }));
+
+  svg.appendChild(svgEl('polyline', { points: pointsA.trim(), fill: 'none', stroke: '#1a7a6d', 'stroke-width': 3 }));
+  svg.appendChild(svgEl('polyline', { points: pointsB.trim(), fill: 'none', stroke: '#8b5cf6', 'stroke-width': 3 }));
+
+  // End value labels
+  const endA = 100 * Math.pow(1 + rA, years);
+  const endB = 100 * Math.pow(1 + rB, years);
+  const labelA = svgEl('text', { x: right + 4, y: valToY(endA) + 4, fill: '#1a7a6d', 'font-size': '11', 'font-weight': '700' });
+  labelA.textContent = endA >= 1000 ? Math.round(endA / 100) / 10 + 'k' : Math.round(endA);
+  svg.appendChild(labelA);
+  const labelB = svgEl('text', { x: right + 4, y: Math.max(valToY(endB) + 4, valToY(endA) - 14), fill: '#8b5cf6', 'font-size': '11', 'font-weight': '700' });
+  labelB.textContent = endB >= 1000 ? Math.round(endB / 100) / 10 + 'k' : Math.round(endB);
+  svg.appendChild(labelB);
+
+  // Scale note
+  if (useLog) {
+    const note = svgEl('text', { x: left + 4, y: top + 12, fill: '#999', 'font-size': '9' });
+    note.textContent = 'Log scale';
+    svg.appendChild(note);
+  }
+}
+
+/* =========================================
+   NAVIGATION
+   ========================================= */
+function showSection(sectionId) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(sectionId).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.section === sectionId));
+  // Initialize graphs when first shown
+  if (sectionId === 'tariff') drawTariffGraph();
+  if (sectionId === 'asad') drawASADGraph();
+  if (sectionId === 'rule72') {
+    updateMainCalc();
+    updateComparison();
+  }
+  window.scrollTo(0, 0);
+}
+
+/* =========================================
+   INIT
+   ========================================= */
+function init() {
+  loadProgress();
+  // Flashcards
+  state.filteredCards = weightedShuffle([...CARDS]);
+  renderFilters();
+  renderCard();
+  renderStats();
+  setupSwipe();
+  // Nav
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => showSection(tab.dataset.section));
+  });
+  // Rule of 72 sliders
+  document.getElementById('mainSlider').addEventListener('input', updateMainCalc);
+  document.getElementById('sliderA').addEventListener('input', updateComparison);
+  document.getElementById('sliderB').addEventListener('input', updateComparison);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
